@@ -106,6 +106,7 @@ CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/ElVis/Core/Float.cu.in
                ${CMAKE_BINARY_DIR}/ElVis/Core/Float.cu )
 
 SET(ELVIS_HEADERS
+	Application.h
     Buffer.h
     Camera.h
     Color.h
@@ -171,6 +172,7 @@ SET(ELVIS_MATH_HEADERS
 )
 
 SET(ELVIS_SOURCES
+	Application.cpp
     Buffer.cpp
     Camera.cpp
     Color.cpp

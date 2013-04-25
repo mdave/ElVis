@@ -31,13 +31,16 @@
 #include <QLabel>
 
 #include <ElVis/Gui/ElVisUI.h>
+#include <ElVis/Gui/MainWindow.h>
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
     
-    ElVis::Gui::ElVisUI* mainWindow = new ElVis::Gui::ElVisUI();
-    mainWindow->show();
+    //ElVis::Gui::ElVisUI* mainWindow = new ElVis::Gui::ElVisUI();
+	
+	ElVis::MainWindow* mainWindow = new ElVis::MainWindow();
+	mainWindow->show();
 
     return app.exec();
 }

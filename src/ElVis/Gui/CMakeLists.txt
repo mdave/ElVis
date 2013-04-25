@@ -8,7 +8,8 @@ IF( QT4_FOUND )
     include(${QT_USE_FILE})
 ENDIF()
 
-SET(QT_UI_HEADERS 
+SET(QT_UI_FILES
+	MainWindow.ui
 )
 
 SET(QT_QOBJECT_HEADERS
@@ -24,6 +25,7 @@ SET(QT_QOBJECT_HEADERS
     ElVisUI.h
     IsosurfaceDockWidget.h
     LightingDockWidget.h
+	MainWindow.h
     ModelInspectorWidget.h
     ObjectInspectorUI.h
     PlanePropertyManager.h
@@ -38,8 +40,9 @@ SET(QT_QOBJECT_HEADERS
     VolumeRenderingSettingsWidget.h
 )
 
-#QT_WRAP_UI(${Project} QT_PROCESSED_UI_HEADERS QT_PROCESSED_UI_SOURCE ${QT_UI_HEADERS})
-QT_WRAP_CPP(${Project} QT_PROCESSED_MOC_SOURCE ${QT_QOBJECT_HEADERS})
+SET(Headers
+	ApplicationState.h
+)
 
 SET(Sources
     ApplicationState.cpp    
@@ -54,7 +57,8 @@ SET(Sources
     IsosurfaceDockWidget.cpp
     LightingDockWidget.cpp
     main.cpp
-    ModelInspectorWidget.cpp
+    MainWindow.cpp
+	ModelInspectorWidget.cpp
     ObjectInspectorUI.cpp
     RenderSettingsDockWidget.cpp
     SampleOntoNrrdDockWidget.cpp
@@ -64,10 +68,18 @@ SET(Sources
     VolumeRenderingSettingsWidget.cpp
 )
 
-SET(Headers
-    ApplicationState.h
-    ElVis.qss
-)
+SET(QT_STYLES ElVis.qss)
+
+QT_WRAP_CPP(${Project} QT_PROCESSED_MOC_SOURCE ${QT_QOBJECT_HEADERS})
+QT4_WRAP_UI(QT_PROCESSED_UI_HEADERS ${QT_UI_FILES})
+#QT4_ADD_RESOURCES(QT_RESOURCES ${RESOURCES})
+
+SOURCE_GROUP("Moc Files" FILES ${QT_PROCESSED_MOC_SOURCE})
+SOURCE_GROUP("UI Headers Files" FILES ${QT_PROCESSED_UI_HEADERS})
+SOURCE_GROUP("UI Files" FILES ${QT_UI_FILES})
+SOURCE_GROUP("UI Styles" FILES ${QT_STYLES})
+
+message(STATUS "${QT_RESOURCES}")
 
 # Allows interoperability between boost::signals and qt signals.
 add_definitions(-DQT_NO_KEYWORDS)
@@ -77,9 +89,11 @@ ADD_ELVIS_EXECUTABLE(${Project}
     ${Headers}
     ${QT_QOBJECT_HEADERS}
     ${QT_PROCESSED_UI_HEADERS}
-    #${QT_PROCESSED_UI_SOURCE}
     ${QT_PROCESSED_MOC_SOURCE}
+	${QT_STYLES}
 )
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SET_PROPERTY(TARGET ${Project} PROPERTY FOLDER "Core")
 
