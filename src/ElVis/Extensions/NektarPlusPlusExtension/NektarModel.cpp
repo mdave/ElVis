@@ -258,7 +258,7 @@ namespace NektarPlusPlusExtension
             {
                 minX = std::min((ElVisFloat)x[j], minX);
                 minY = std::min((ElVisFloat)y[j], minY);
-                minZ = std::min((ElVisFloat)z[j], minZ);
+                minZ = i == 0 ? -0.3f : std::min((ElVisFloat)z[j], minZ);
                 maxX = std::max((ElVisFloat)x[j], maxX);
                 maxY = std::max((ElVisFloat)y[j], maxY);
                 maxZ = std::max((ElVisFloat)z[j], maxZ);

@@ -191,8 +191,8 @@ ELVIS_DEVICE ElVisError EvaluateFaceJacobian(
     dz_ds = EvaluateQuadGradientAtReferencePoint1(
         &FaceCoeffsBuffer[offset+2*nummodes], &FaceNumModesBuffer[Idx.Value], p);
 
-    ELVIS_PRINTF("[NEKTAR] Idx = %d  p = %f %f  offset = %d  nummodes = %d  dx_dr = %f  dx_ds = %f  dy_dr = %f  dy_ds = %f  dz_dr = %f  dz_ds = %f\n",
-                 Idx.Value, p.x, p.y, offset, nummodes, dx_dr, dx_ds, dy_dr, dy_ds, dz_dr, dz_ds);
+    //ELVIS_PRINTF("[NEKTAR] Idx = %d  p = %f %f  offset = %d  nummodes = %d  dx_dr = %f  dx_ds = %f  dy_dr = %f  dy_ds = %f  dz_dr = %f  dz_ds = %f\n",
+    //             Idx.Value, p.x, p.y, offset, nummodes, dx_dr, dx_ds, dy_dr, dy_ds, dz_dr, dz_ds);
     
     return eNoError;
 }
@@ -265,7 +265,7 @@ ELVIS_DEVICE ElVisError EvaluateFace(
 
     ELVIS_PRINTF("[NEKTAR] offset = %d  nummodes = %d  refpoint = %f %f  result = %f %f %f\n",
                  offset, nummodes, refPoint.x, refPoint.y, result.x, result.y, result.z);
-    
+
     return eNoError;
 }
 
@@ -296,17 +296,45 @@ ELVIS_DEVICE ElVisError SampleGeometryMappingJacobianOptiX(
 // Curved: reference/starting point for Newton algorithm
 ELVIS_DEVICE ElVisError getStartingReferencePointForNewtonIteration(const CurvedFaceIdx& idx, ElVisFloat2& startingPoint)
 {
-    startingPoint.x = 0.0;
-    startingPoint.y = 0.0;
+    startingPoint.x = MAKE_FLOAT(0.0);
+    startingPoint.y = MAKE_FLOAT(0.0);
     return eNoError;
 }
 
 // Curved: stop point from leaving the element
 ELVIS_DEVICE ElVisError adjustNewtonStepToKeepReferencePointOnFace(const CurvedFaceIdx& idx, ElVisFloat3& newPoint)
 {
-    newPoint.x = max(min(newPoint.x, 1.0), -1.0);
-    newPoint.y = max(min(newPoint.y, 1.0), -1.0);
-    return eNoError;
+    ELVIS_PRINTF("[NEKTAR -- ADJUSTNEWTON] before = %f %f\n", newPoint.x, newPoint.y);
+
+    bool changed = false;
+    if (newPoint.x > MAKE_FLOAT(1.0))
+    {
+        newPoint.x = MAKE_FLOAT(1.0);
+        changed = true;
+    }
+
+    if (newPoint.x < MAKE_FLOAT(-1.0))
+    {
+        newPoint.x = MAKE_FLOAT(-1.0);
+        changed = true;
+    }
+
+    if (newPoint.y > MAKE_FLOAT(1.0))
+    {
+        newPoint.y = MAKE_FLOAT(1.0);
+        changed = true;
+    }
+    if (newPoint.y < MAKE_FLOAT(-1.0))
+    {
+        newPoint.y = MAKE_FLOAT(-1.0);
+        changed = true;
+    }
+
+    //newPoint.x = max(min(newPoint.x, MAKE_FLOAT(1.0)), MAKE_FLOAT(-1.0));
+    //newPoint.y = max(min(newPoint.y, MAKE_FLOAT(1.0)), MAKE_FLOAT(-1.0));
+
+    ELVIS_PRINTF("[NEKTAR -- ADJUSTNEWTON] after = %f %f (changed = %d)\n", newPoint.x, newPoint.y, changed);
+    return changed ? ePointOutsideElement : eNoError;
 }
 
 #endif

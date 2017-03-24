@@ -338,28 +338,29 @@ ELVIS_DEVICE bool FindClosestRoot(const F& func, const FPrime& fprime, const Int
 
     ReferencePoint result = MakeFloat3(initialReferenceCoordinates.x,initialReferenceCoordinates.y, initialGuess[2].GetMidpoint());
 
-//   ELVIS_PRINTF("FindClosestRoot: Initial Guess (%f, %f, %f), tolerance %2.15f\n", result.x, result.y, result.z, tolerance);
+    ELVIS_PRINTF("FindClosestRoot: Initial Guess (%f, %f, %f), tolerance %2.15f\n", result.x, result.y, result.z, tolerance);
 
     int numIterations = 0;
     ElVis::Matrix<3,3> J;
     ElVis::Matrix<3,3> inverse;
-    const int MAX_ITERATIONS = 10;
+    const int MAX_ITERATIONS = 25;
     ElVisError err;
     do
     {
-        //ELVIS_PRINTF("FindClosestRoot: Current guess (%f, %f, %f).\n", result.x, result.y, result.z);
+        ELVIS_PRINTF("FindClosestRoot: Current guess (%f, %f, %f).\n", result.x, result.y, result.z);
         WorldPoint f = func(result);
 
+        ELVIS_PRINTF("FindClosestRoot: f (%f, %f, %f)\n", f.x, f.y, f.z);
         fprime(result, J);
         Invert(J, inverse);
 
-//        ELVIS_PRINTF("FindClosestRoot: f (%f, %f, %f)\n", f.x, f.y, f.z);
-//        ELVIS_PRINTF("J[0] (%f, %f, %f)\n", J[0], J[1], J[2]);
-//        ELVIS_PRINTF("J[1] (%f, %f, %f)\n", J[3], J[4], J[5]);
-//        ELVIS_PRINTF("J[2] (%f, %f, %f)\n", J[6], J[7], J[8]);
-//        ELVIS_PRINTF("I[0] (%f, %f, %f)\n", inverse[0], inverse[1], inverse[2]);
-//        ELVIS_PRINTF("I[1] (%f, %f, %f)\n", inverse[3], inverse[4], inverse[5]);
-//        ELVIS_PRINTF("I[2] (%f, %f, %f)\n", inverse[6], inverse[7], inverse[8]);
+        ELVIS_PRINTF("FindClosestRoot: f (%f, %f, %f)\n", f.x, f.y, f.z);
+        ELVIS_PRINTF("J[0] (%f, %f, %f)\n", J[0], J[1], J[2]);
+        ELVIS_PRINTF("J[1] (%f, %f, %f)\n", J[3], J[4], J[5]);
+        ELVIS_PRINTF("J[2] (%f, %f, %f)\n", J[6], J[7], J[8]);
+        ELVIS_PRINTF("I[0] (%f, %f, %f)\n", inverse[0], inverse[1], inverse[2]);
+        ELVIS_PRINTF("I[1] (%f, %f, %f)\n", inverse[3], inverse[4], inverse[5]);
+        ELVIS_PRINTF("I[2] (%f, %f, %f)\n", inverse[6], inverse[7], inverse[8]);
 
         ElVisFloat3 step;
         step.x = (inverse[0]*f.x + inverse[1]*f.y + inverse[2]*f.z);
@@ -372,8 +373,9 @@ ELVIS_DEVICE bool FindClosestRoot(const F& func, const FPrime& fprime, const Int
 
 //        ELVIS_PRINTF("Adjust %f, %f, %f\n", r_adjust, s_adjust, t_adjust);
         err = adjustNewtonStepToKeepReferencePointOnFace( curvedFaceIdx, result );
+        //result.z = max(min(result.z, initialGuess[2].GetHigh(), initialGuess[2].GetLow;
 
-//        ELVIS_PRINTF("FindClosestRoot: step (%f, %f, %f), err=%d.\n", step.x, step.y, step.z, err);
+        ELVIS_PRINTF("FindClosestRoot: step (%f, %f, %f), err=%d.\n", step.x, step.y, step.z, err);
 
         bool test = fabsf(step.x) < tolerance;
         test &= fabsf(step.y) < tolerance;
